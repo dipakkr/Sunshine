@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,8 +37,9 @@ import java.util.List;
 
 public class ForecastFragment extends Fragment {
 
-    private ArrayAdapter<String> mForecastAdapter;
+    ProgressBar progressBar;
 
+    private ArrayAdapter<String> mForecastAdapter;
     public ForecastFragment() {
     }
 
@@ -54,21 +56,23 @@ public class ForecastFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("6954929");
+            fetchWeather();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void fetchWeather(){
+        FetchWeatherTask weatherTask = new FetchWeatherTask(progressBar);
+        weatherTask.execute("6954929");
+
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        // Create some dummy data for the ListView.  Here's a sample weekly forecast
         String[] data = {
                 "Mon 6/23 - Sunny - 31/17",
                 "Tue 6/24 - Foggy - 21/8",
@@ -79,26 +83,29 @@ public class ForecastFragment extends Fragment {
                 "Sun 6/29 - Sunny - 20/7"
         };
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
-
         mForecastAdapter =
                 new ArrayAdapter<String>(
                         getActivity(), //
                         R.layout.list_item_forecast,
                         R.id.list_item_forecast_textview,
                         weekForecast);
-
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.list_view_forecast);
         listView.setAdapter(mForecastAdapter);
 
+        progressBar = (ProgressBar)rootView.findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setProgress(0);
         return rootView;
     }
+    public class FetchWeatherTask extends AsyncTask<String, Integer, String[]> {
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+        public FetchWeatherTask(ProgressBar progressBar){
+            this.progressBar = progressBar;
+        }
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+        ProgressBar progressBar;
 
         private String getReadableDateString(long time){
             SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
@@ -112,6 +119,19 @@ public class ForecastFragment extends Fragment {
             String highLowStr = roundedHigh + "/" + roundedLow;
             return highLowStr;
         }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            progressBar.setProgress(values[0]);
+        }
+
 
         private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
                 throws JSONException {
@@ -161,6 +181,8 @@ public class ForecastFragment extends Fragment {
             return resultStrs;
 
         }
+
+
         @Override
         protected String[] doInBackground(String... params) {
 
@@ -250,6 +272,8 @@ public class ForecastFragment extends Fragment {
         protected void onPostExecute(String[] result) {
             if (result != null) {
                 mForecastAdapter.clear();
+                progressBar.setVisibility(View.GONE);
+                progressBar.setProgress(0);
                 for(String dayForecastStr : result) {
                     mForecastAdapter.add(dayForecastStr);
                 }

@@ -10,5 +10,11 @@
         android:id="@+id/list_view_forecast">
 
     </ListView>
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        android:id="@+id/progress_bar"/>
 
 </FrameLayout>
