@@ -56,9 +56,10 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
+
         if (id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("6954929");
+            weatherTask.execute("94043");
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -238,6 +239,7 @@ public class ForecastFragment extends Fragment {
                     }
                 }
             }
+
             try {
                 return getWeatherDataFromJson(forecastJsonStr, numDays);
             } catch (JSONException e) {
