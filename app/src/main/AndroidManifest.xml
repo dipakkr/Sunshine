@@ -26,6 +26,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dipakkr.github.weatherlive.MainActivity" />
         </activity>
+
+        <activity android:name=".SettingActivity"/>
+
     </application>
 
 </manifest>

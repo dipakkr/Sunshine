@@ -229,11 +229,12 @@ public class ForecastFragment extends Fragment {
                     buffer.append(line + "\n");
                 }
                 if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
                     return null;
                 }
+
                 forecastJsonStr = buffer.toString();
                 Log.v(LOG_TAG, "Forecast string: " + forecastJsonStr);
+
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attempting

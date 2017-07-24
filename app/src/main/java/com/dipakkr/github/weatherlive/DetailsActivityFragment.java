@@ -28,7 +28,7 @@ public class DetailsActivityFragment extends Fragment {
             String txt_forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
             textView.setText(txt_forecast);
         }
-        return view;
 
+        return view;
     }
 }
